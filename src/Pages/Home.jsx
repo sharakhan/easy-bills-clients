@@ -1,16 +1,17 @@
 // src/pages/Home.jsx  (অথবা যেখানে আছে)
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Slider from "../Components/Slider";
 import CategoryCard from "../Components/CategoryCard";
 import BillCard from "../Components/BillCard";
 import { useAuth } from "../context/useAuth"; // ঠিক আছে
-import toast from "react-hot-toast";
+
+
 
 const Home = () => {
   const [bills, setBills] = useState([]);
-  const { user,  loading } = useAuth(); // logout + loading
+  const {  loading } = useAuth(); // logout + loading
   
 
  
@@ -22,7 +23,7 @@ const Home = () => {
       .then((res) => {
         setBills(res.data.slice(0, 6));
       })
-      .catch((err) => {});
+      .catch(() => {});
   }, []);
 
   // Categories Data
