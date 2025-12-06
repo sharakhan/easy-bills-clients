@@ -88,6 +88,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center px-4 py-12">
+      <title>Register</title>
       <div className="w-full max-w-lg">
         <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
 
@@ -96,7 +97,9 @@ const Register = () => {
             <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
               <User className="w-9 h-9 text-white" />
             </div>
+            
             <h1 className="text-3xl font-bold text-gray-900 mt-4">Create Account</h1>
+
             <p className="text-gray-600 mt-2">Join Easy Bill Management System</p>
           </div>
 

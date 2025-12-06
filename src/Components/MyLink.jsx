@@ -7,7 +7,7 @@ const MyLink = ({ to, children }) => {
         <NavLink
             to={to}
             className={({ isActive }) =>
-                `px-3 font-semibold transition-colors duration-200 ${isActive ? "text-[#ffc86f] border-b-2 border-[#ffc86f]" : "hover:text-[#ffc86f]"
+                `px-3 font-bold text-xl transition-colors duration-200 ${isActive ? "text-green-700 border-b-2 border-green-700" : "hover:text-green-700"
                 }`
             }
         >

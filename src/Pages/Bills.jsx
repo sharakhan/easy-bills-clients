@@ -64,7 +64,7 @@ const Bills = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      
+        <title>Bills</title>
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
           💼 Easy Bill Management

@@ -49,7 +49,7 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-    
+      <title>Home</title>
       {/* ===== Hero Slider ===== */}
       <div className="mt-8">
         <Slider />

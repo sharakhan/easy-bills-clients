@@ -12,6 +12,7 @@ import Register from "../Pages/Register";
 import Profile from "../Pages/Profile";
 import ForgotPassword from "../Pages/ForgotPassword";
 import MyPayBills from "../Pages/MyPayBills";
+import Error404 from "../Pages/Error404";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ export const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/*",
+        Component:Error404,
       },
     ],
   },
