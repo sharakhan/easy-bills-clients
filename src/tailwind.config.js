@@ -1,5 +1,6 @@
 export default {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'], // Ensure this matches your file paths
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  darkMode: "class",   // <-- এটি ঠিক আছে
   theme: {
     extend: {
       keyframes: {
@@ -13,5 +14,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],  // <-- এটি যোগ করুন (DaisyUI প্লাগিন)
 };

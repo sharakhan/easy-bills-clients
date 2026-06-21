@@ -29,7 +29,6 @@
     "styled-components": "^6.1.19",
     "sweetalert2": "^11.26.3",
     "swiper": "^12.0.3",
-    "tailwindcss": "^4.1.17",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -37,11 +36,13 @@
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
-    "daisyui": "^5.4.7",
+    "baseline-browser-mapping": "^2.10.38",
+    "daisyui": "^5.5.8",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
+    "tailwindcss": "^4.1.17",
     "vite": "^7.1.7"
   }
 }
