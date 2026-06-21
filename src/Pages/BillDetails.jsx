@@ -28,7 +28,9 @@ const BillDetails = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3000/bill/${id}`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_CLIENT_URL}/bill/${id}`
+        );
         setBill(response.data);
       } catch (err) {
         console.error("API Error:", err);
@@ -168,9 +170,8 @@ const BillDetails = () => {
             <button
               onClick={() => modalRef.current.showModal()}
               disabled={!isEnabled}
-              className={`btn w-full text-xl ${
-                isEnabled ? "btn-success text-white" : "btn-disabled"
-              }`}
+              className={`btn w-full text-xl ${isEnabled ? "btn-success text-white" : "btn-disabled"
+                }`}
             >
               Pay Bill
             </button>

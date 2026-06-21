@@ -19,7 +19,9 @@ const Bills = () => {
   useEffect(() => {
     const loadAllCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/bill");
+       const response = await axios.get(
+  `${import.meta.env.VITE_API_URL}/bill`
+);
         const allBills = response.data || [];
 
         const categories = [
@@ -44,8 +46,8 @@ const Bills = () => {
 
     try {
       const endpoint = selectedCategory
-        ? `http://localhost:3000/bill?category=${selectedCategory}`
-        : "http://localhost:3000/bill";
+  ? `${import.meta.env.VITE_API_URL}/bill?category=${selectedCategory}`
+  : `${import.meta.env.VITE_API_URL}/bill`;
 
       const res = await axios.get(endpoint);
       setBills(res.data || []);
@@ -105,7 +107,7 @@ const Bills = () => {
                 No bills found.
               </p>
             ) : (
-              bills.map((bill) => (
+              bills?.map((bill) => (
                 <BillCard
                   key={bill._id}
                   bill={bill}

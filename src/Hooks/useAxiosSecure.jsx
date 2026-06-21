@@ -3,7 +3,7 @@ import { use } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const instanceSecure = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL:  import.meta.env.CLIENT_URL,
 });
 
 const useAxiosSecure = () => {

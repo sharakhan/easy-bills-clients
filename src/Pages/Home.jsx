@@ -19,7 +19,7 @@ const Home = () => {
   // Fetch Recent Bills
   useEffect(() => {
     axios
-      .get("http://localhost:3000/bill")
+      .get(import.meta.env.VITE_CLIENT_URL)
       .then((res) => {
         setBills(res.data.slice(0, 6));
       })
@@ -82,7 +82,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           {bills.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bills.map((bill) => (
+              {bills?.map((bill) => (
                 <BillCard key={bill._id} bill={bill} />
               ))}
             </div>

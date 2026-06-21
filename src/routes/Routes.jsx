@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
       {
         path: "bills",
 
-        loader: () => fetch("http://localhost:3000/bill"),
+        loader: () => fetch(import.meta.env.VITE_CLIENT_URL),
         element: (
           <Suspense fallback={<Loading />}>
             <Bills />
@@ -36,7 +36,8 @@ export const router = createBrowserRouter([
       {
         path: "/bill-details/:id",
         loader: ({ params }) =>
-          fetch(`http://localhost:3000/bill/${params.id}`),
+         
+          fetch(`${import.meta.env.VITE_CLIENT_URL}${params.id}`),
         element: (
           <Suspense fallback={<Loading />}>
             <ProtectedRoute>
