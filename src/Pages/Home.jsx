@@ -1,32 +1,38 @@
-// src/pages/Home.jsx  (অথবা যেখানে আছে)
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Slider from "../Components/Slider";
 import CategoryCard from "../Components/CategoryCard";
 import BillCard from "../Components/BillCard";
-import { useAuth } from "../context/useAuth"; // ঠিক আছে
-
-
+import { useAuth } from "../context/useAuth";
 
 const Home = () => {
   const [bills, setBills] = useState([]);
-  const {  loading } = useAuth(); // logout + loading
-  
+  const { loading } = useAuth();
 
- 
-
+  // ==========================
   // Fetch Recent Bills
+  // ==========================
   useEffect(() => {
-    axios
-      .get(import.meta.env.VITE_CLIENT_URL)
-      .then((res) => {
-        setBills(res.data.slice(0, 6));
-      })
-      .catch(() => {});
+    const fetchBills = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/bill`
+        );
+
+        const data = Array.isArray(res.data) ? res.data : [];
+
+        setBills(data.slice(0, 6));
+      } catch (err) {
+        console.error(err);
+        setBills([]);
+      }
+    };
+
+    fetchBills();
   }, []);
 
-  // Categories Data
+  // Categories
   const categories = [
     {
       name: "Electricity",
@@ -38,11 +44,12 @@ const Home = () => {
     { name: "Internet", icon: "Globe", color: "from-purple-400 to-indigo-500" },
   ];
 
-  // If still checking auth state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-2xl font-semibold text-gray-600">Loading...</div>
+        <div className="text-2xl font-semibold text-gray-600">
+          Loading...
+        </div>
       </div>
     );
   }
@@ -50,12 +57,13 @@ const Home = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <title>Home</title>
-      {/* ===== Hero Slider ===== */}
+
+      {/* Slider */}
       <div className="mt-8">
         <Slider />
       </div>
 
-      {/* ===== Categories Section ===== */}
+      {/* Categories */}
       <section className="px-6 py-12">
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
           Bill Categories
@@ -73,7 +81,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== Recent Bills Section ===== */}
+      {/* Recent Bills */}
       <section className="px-6 pb-16">
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
           Recent Bills
@@ -82,17 +90,16 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           {bills.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bills?.map((bill) => (
+              {bills.map((bill) => (
                 <BillCard key={bill._id} bill={bill} />
               ))}
             </div>
           ) : (
             <p className="text-center text-gray-500 text-lg">
-              No bills found or loading...
+              No bills found
             </p>
           )}
 
-          {/* View All Bills Button */}
           <div className="flex justify-center mt-12">
             <Link
               to="/bills"

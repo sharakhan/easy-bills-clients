@@ -11,26 +11,35 @@ const Bills = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   // ==========================
-  // Fetch ALL BILLS once → collect all categories
+  // Fetch categories
   // ==========================
   useEffect(() => {
     const loadAllCategories = async () => {
       try {
-       const response = await axios.get(
-  `${import.meta.env.VITE_API_URL}/bill`
-);
-        const allBills = response.data || [];
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/bill`
+        );
+
+        const allBills = Array.isArray(response.data)
+          ? response.data
+          : [];
 
         const categories = [
-          ...new Set(allBills.map((b) => b?.category).filter(Boolean)),
+          ...new Set(
+            allBills
+              .map((b) => b?.category)
+              .filter((c) => typeof c === "string")
+          ),
         ];
 
         setAllCategories(categories);
       } catch (err) {
         console.error("Category Error:", err);
+        setAllCategories([]);
       }
     };
 
@@ -38,7 +47,7 @@ const Bills = () => {
   }, []);
 
   // ==========================
-  // Fetch bills based on selected category
+  // Fetch bills
   // ==========================
   const fetchBills = async () => {
     setLoading(true);
@@ -46,13 +55,20 @@ const Bills = () => {
 
     try {
       const endpoint = selectedCategory
-  ? `${import.meta.env.VITE_API_URL}/bill?category=${selectedCategory}`
-  : `${import.meta.env.VITE_API_URL}/bill`;
+        ? `${import.meta.env.VITE_API_URL}/bill?category=${selectedCategory}`
+        : `${import.meta.env.VITE_API_URL}/bill`;
 
       const res = await axios.get(endpoint);
-      setBills(res.data || []);
+
+      const data = Array.isArray(res.data)
+        ? res.data
+        : [];
+
+      setBills(data);
     } catch (err) {
+      console.error(err);
       setError("Failed to load bills");
+      setBills([]);
     } finally {
       setLoading(false);
     }
@@ -66,7 +82,8 @@ const Bills = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-        <title>Bills</title>
+      <title>Bills</title>
+
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
           💼 Easy Bill Management
@@ -85,11 +102,12 @@ const Bills = () => {
           >
             <option value="">All Categories</option>
 
-            {allCategories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
+            {Array.isArray(allCategories) &&
+              allCategories.map((cat, index) => (
+                <option key={index} value={cat}>
+                  {cat}
+                </option>
+              ))}
           </select>
         </div>
       </header>
@@ -102,23 +120,22 @@ const Bills = () => {
           <ErrorMessage message={error} onRetry={fetchBills} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6 justify-items-center">
-            {bills.length === 0 ? (
-              <p className="text-center text-gray-600 text-lg col-span-full">
-                No bills found.
-              </p>
-            ) : (
-              bills?.map((bill) => (
+            {Array.isArray(bills) && bills.length > 0 ? (
+              bills.map((bill) => (
                 <BillCard
                   key={bill._id}
                   bill={bill}
                   onViewDetails={seeDetails}
                 />
               ))
+            ) : (
+              <p className="text-center text-gray-600 text-lg col-span-full">
+                No bills found.
+              </p>
             )}
           </div>
         )}
       </main>
-
     </div>
   );
 };

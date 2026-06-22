@@ -13,28 +13,31 @@ const BillDetails = () => {
   const [bill, setBill] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled, setIsEnabled] = useState(false);
 
   const { user } = useContext(AuthContext);
   const instanceSecure = useAxiosSecure();
 
-  // Fetch bill by ID
+  // ==========================
+  // FETCH BILL BY ID
+  // ==========================
   useEffect(() => {
     const fetchBill = async () => {
       if (!id) {
-        setError("Invalid bill ID.");
+        setError("Invalid bill ID");
         setLoading(false);
         return;
       }
 
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_CLIENT_URL}/bill/${id}`
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/bill/${id}`
         );
-        setBill(response.data);
+
+        setBill(res.data || null);
       } catch (err) {
-        console.error("API Error:", err);
-        setError("Failed to load bill details. Please try again.");
+        console.error(err);
+        setError("Failed to load bill details");
       } finally {
         setLoading(false);
       }
@@ -43,9 +46,11 @@ const BillDetails = () => {
     fetchBill();
   }, [id]);
 
-  // Enable/disable Pay Bill button
+  // ==========================
+  // ENABLE PAY BUTTON (same month check)
+  // ==========================
   useEffect(() => {
-    if (!bill) return;
+    if (!bill?.date) return;
 
     const billDate = new Date(bill.date);
     const today = new Date();
@@ -59,175 +64,150 @@ const BillDetails = () => {
 
   const currentDate = new Date().toISOString().slice(0, 10);
 
-  // Handle Pay Bill Submission
-  const handlePayBill = (e) => {
+  // ==========================
+  // PAY BILL
+  // ==========================
+  const handlePayBill = async (e) => {
     e.preventDefault();
 
+    if (!user) {
+      toast.error("User not logged in");
+      return;
+    }
+
     const billData = {
-      email: user.email,
-      userName: user.displayName,
+      email: user?.email,
+      userName: user?.displayName,
       billId: id,
-      amount: bill.amount,
+      amount: bill?.amount,
       address: e.target.address.value,
       phoneNumber: e.target.phoneNumber.value,
       date: currentDate,
     };
 
-    instanceSecure
-      .post(`/newPay?email=${user?.email}`, billData)
-      .then((res) => {
-        if (res.data.insertedId) {
-          toast.success("Bill payment successful!");
-          modalRef.current.close();
-        }
-      })
-      .catch(() => {
-        toast.error("Payment failed. Try again.");
-      });
+    try {
+      const res = await instanceSecure.post(
+        `/newPay?email=${user?.email}`,
+        billData
+      );
+
+      if (res.data?.insertedId) {
+        toast.success("Bill payment successful!");
+        modalRef.current?.close();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Payment failed. Try again.");
+    }
   };
 
-  // Loading screen
+  // ==========================
+  // LOADING
+  // ==========================
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-lg">Loading bill details...</p>
+        Loading...
       </div>
     );
   }
 
-  // Error screen
+  // ==========================
+  // ERROR
+  // ==========================
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 text-lg mb-4">{error}</p>
+      <div className="min-h-screen flex items-center justify-center text-center">
+        <div>
+          <p className="text-red-500 mb-3">{error}</p>
           <button
-            onClick={() => navigate("/")}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+            onClick={() => navigate("/bills")}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
           >
-            Back to Bills
+            Back
           </button>
         </div>
       </div>
     );
   }
 
-  // Bill not found
+  // ==========================
+  // NO BILL
+  // ==========================
   if (!bill) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 text-lg mb-4">Bill not found.</p>
-          <button
-            onClick={() => navigate("/")}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-          >
-            Back to Bills
-          </button>
-        </div>
+        Bill not found
       </div>
     );
   }
 
+  // ==========================
+  // UI
+  // ==========================
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <title>Bill Details</title>
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-8">
 
+      <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
         <button
           onClick={() => navigate("/bills")}
-          className="mb-6 bg-gray-500 text-white px-4 py-2 rounded-lg"
+          className="mb-5 bg-gray-500 text-white px-4 py-2 rounded"
         >
-          ← Back to Bills
+          Back
         </button>
 
-        {/* BILL HEADER */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            📄 {bill.title}
-          </h1>
-          <p className="text-xl text-gray-600">Detailed Bill Information</p>
+        <h1 className="text-3xl font-bold mb-4">{bill?.title}</h1>
+
+        <img
+          src={
+            bill?.image ||
+            "https://via.placeholder.com/400x250"
+          }
+          className="w-full h-64 object-cover rounded"
+        />
+
+        <div className="mt-5 space-y-2">
+          <p>Category: {bill?.category}</p>
+          <p>Location: {bill?.location}</p>
+          <p>Amount: {bill?.amount}৳</p>
+          <p>Date: {bill?.date}</p>
         </div>
 
-        {/* BILL DETAILS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <img
-            src={bill.image || "https://via.placeholder.com/400x256"}
-            alt=""
-            className="w-full h-64 rounded-xl object-cover shadow-md"
-          />
-
-          <div className="space-y-2 text-lg">
-            <p>🏷️ <strong>Category:</strong> {bill.category}</p>
-            <p>📍 <strong>Location:</strong> {bill.location}</p>
-            <p>📧 <strong>Email:</strong> {bill.email}</p>
-            <p>📅 <strong>Date:</strong> {bill.date}</p>
-            <p className="text-green-600 font-bold">
-              💰 <strong>Amount:</strong> {bill.amount}৳
-            </p>
-            <p>📝 <strong>Description:</strong> {bill.description}</p>
-
-            <button
-              onClick={() => modalRef.current.showModal()}
-              disabled={!isEnabled}
-              className={`btn w-full text-xl ${isEnabled ? "btn-success text-white" : "btn-disabled"
-                }`}
-            >
-              Pay Bill
-            </button>
-          </div>
-        </div>
+        <button
+          onClick={() => modalRef.current?.showModal()}
+          disabled={!isEnabled}
+          className={`mt-5 px-4 py-2 rounded text-white ${
+            isEnabled ? "bg-green-500" : "bg-gray-400"
+          }`}
+        >
+          Pay Bill
+        </button>
       </div>
 
-      {/* PAYMENT MODAL */}
+      {/* MODAL */}
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
-
           <form onSubmit={handlePayBill} className="space-y-3">
 
-            <div>
-              <label>Email:</label>
-              <input className="input w-full" value={user.email} readOnly />
-            </div>
+            <input className="input w-full" value={user?.email || ""} readOnly />
+            <input className="input w-full" value={user?.displayName || ""} readOnly />
+            <input className="input w-full" value={id} readOnly />
+            <input className="input w-full" value={bill?.amount || ""} readOnly />
 
-            <div>
-              <label>Username:</label>
-              <input className="input w-full" value={user.displayName} readOnly />
-            </div>
+            <input name="address" className="input w-full" placeholder="Address" required />
+            <input name="phoneNumber" className="input w-full" placeholder="Phone" required />
 
-            <div>
-              <label>Bill ID:</label>
-              <input className="input w-full" value={id} readOnly />
-            </div>
+            <input className="input w-full" value={currentDate} readOnly />
 
-            <div>
-              <label>Amount:</label>
-              <input className="input w-full" value={bill.amount} readOnly />
-            </div>
-
-            <div>
-              <label>Address:</label>
-              <input name="address" required className="input w-full" />
-            </div>
-
-            <div>
-              <label>Phone:</label>
-              <input name="phoneNumber" required className="input w-full" />
-            </div>
-
-            <div>
-              <label>Date:</label>
-              <input className="input w-full" value={currentDate} readOnly />
-            </div>
-
-            <button className="btn btn-success w-full text-white text-xl">
+            <button className="btn btn-success w-full text-white">
               Submit
             </button>
           </form>
 
           <button
-            onClick={() => modalRef.current.close()}
-            className="btn btn-neutral mt-4"
+            onClick={() => modalRef.current?.close()}
+            className="btn mt-3"
           >
             Cancel
           </button>
