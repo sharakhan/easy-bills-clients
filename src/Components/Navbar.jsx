@@ -3,7 +3,7 @@ import MyLink from "./MyLink";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Loading from "./Loading";
-import ThemeToggler from "./ThemeToggler";
+
 
 const Navbar = () => {
   const { user, logout, loading: userLoading } = useContext(AuthContext);
@@ -79,6 +79,7 @@ useEffect(() => {
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  color="white"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                     d="M4 6h16M4 12h16M4 18h16" />
@@ -90,13 +91,11 @@ useEffect(() => {
                 {menuItems}
                 {user && (
                   <li>
-                    <button onClick={logout} className="text-red-500">Logout</button>
+                    <button onClick={logout} className="text-red-700 text-2xl">Logout</button>
                   </li>
                 )}
                 {/* Mobile theme toggle */}
-                <li className="mt-2">
-                  <ThemeToggler theme={theme} setTheme={setTheme} />
-                </li>
+               
               </ul>
             </div>
 
@@ -105,10 +104,8 @@ useEffect(() => {
               {menuItems}
             </ul>
 
-            {/* Desktop Theme Toggle */}
-            <div className="hidden lg:flex">
-              <ThemeToggler theme={theme} setTheme={setTheme} />
-            </div>
+            
+            
 
             {/* Avatar */}
             {user && (
