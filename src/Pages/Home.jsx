@@ -4,7 +4,7 @@ import axios from "axios";
 import Slider from "../Components/Slider";
 import CategoryCard from "../Components/CategoryCard";
 import BillCard from "../Components/BillCard";
-import { useAuth } from "../context/useAuth";
+import useAuth from "../context/useAuth";
 
 const Home = () => {
   const [bills, setBills] = useState([]);

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2, User, Mail, Lock, Camera, AlertCircle, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../context/useAuth";
+import  useAuth  from "../context/useAuth";
 import toast from "react-hot-toast";
 
 const Register = () => {

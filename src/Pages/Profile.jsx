@@ -1,6 +1,6 @@
 // src/pages/Profile.jsx
 import React, { useState } from "react";
-import { useAuth } from "../context/useAuth";
+import  useAuth  from "../context/useAuth";
 import {
   Loader2,
   User,

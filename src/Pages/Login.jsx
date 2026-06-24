@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Loader2, Mail, Lock, AlertCircle } from "lucide-react";
-import { useAuth } from "../context/useAuth";
+import useAuth  from "../context/useAuth";
 import toast from "react-hot-toast";
 
 const Login = () => {
