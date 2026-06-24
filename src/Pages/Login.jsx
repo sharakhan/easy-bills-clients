@@ -36,22 +36,49 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    try {
-      await login(email, password);
-      toast.success("Login successful! Welcome back");
-      navigate(from, { replace: true });
-    } catch (err) {
-      const message =
-        err.code === "auth/user-not-found" || err.code === "auth/wrong-password"
-          ? "Invalid email or password"
-          : err.message || "Login failed. Please try again.";
-      toast.error(message);
+  try {
+    const user = await login(email, password);
+
+    console.log("LOGIN SUCCESS:", user);
+
+    toast.success("Login successful!");
+    navigate(from, { replace: true });
+
+  } catch (err) {
+    console.log("ERROR CODE:", err.code);
+    console.log("ERROR MESSAGE:", err.message);
+    console.log("FULL ERROR:", err);
+
+    switch (err.code) {
+      case "auth/invalid-credential":
+        toast.error("Invalid email or password");
+        break;
+
+      case "auth/user-not-found":
+        toast.error("User not found");
+        break;
+
+      case "auth/wrong-password":
+        toast.error("Wrong password");
+        break;
+
+      case "auth/invalid-email":
+        toast.error("Invalid email address");
+        break;
+
+      case "auth/too-many-requests":
+        toast.error("Too many attempts. Try again later.");
+        break;
+
+      default:
+        toast.error(err.message);
     }
-  };
+  }
+};
 
   const handleGoogleLogin = async () => {
     try {
