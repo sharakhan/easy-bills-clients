@@ -1,5 +1,4 @@
-// context/AuthProvider.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "../firebase/firebase.config";
 import {
   createUserWithEmailAndPassword,
@@ -18,90 +17,72 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        setUser(null);
-      }
+      setUser(currentUser || null);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
-  // FIXED REGISTER FUNCTION
-  const register = async (email, password, displayName = "", photoURL = "") => {
-    setLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const newUser = userCredential.user;
+  const register = async (
+    email,
+    password,
+    displayName = "",
+    photoURL = ""
+  ) => {
+    const result = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-      // Update profile with name and photo
-      await updateProfile(newUser, {
-        displayName: displayName || null,
-        photoURL: photoURL || null,
-      });
+    await updateProfile(result.user, {
+      displayName,
+      photoURL,
+    });
 
-      // Force refresh the user to get updated data
-      await newUser.reload();
-      const updatedUser = auth.currentUser;
+    await result.user.reload();
+    setUser(auth.currentUser);
 
-      setUser(updatedUser); // এটা খুব জরুরি
-      return updatedUser;
-    } catch (error) {
-      console.error("Register error:", error);
-      throw error; // যাতে Register page এ error দেখা যায়
-    } finally {
-      setLoading(false);
-    }
+    return auth.currentUser;
   };
 
   const login = async (email, password) => {
-    setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(
+      const result = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      setUser(userCredential.user);
-      return userCredential.user;
+
+      setUser(result.user);
+      return result.user;
     } catch (error) {
+      console.error("LOGIN ERROR:", error.code);
+      console.error("LOGIN MESSAGE:", error.message);
       throw error;
-    } finally {
-      setLoading(false);
     }
   };
 
   const loginWithGoogle = async () => {
-    setLoading(true);
+    const provider = new GoogleAuthProvider();
+
     try {
-      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
       return result.user;
     } catch (error) {
+      console.error("GOOGLE LOGIN ERROR:", error.code);
       throw error;
-    } finally {
-      setLoading(false);
     }
   };
 
   const logout = async () => {
-    setLoading(true);
-    try {
-      await signOut(auth);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+    await signOut(auth);
+    setUser(null);
   };
 
-  const value = {
+  const authInfo = {
     user,
     loading,
     register,
@@ -110,5 +91,9 @@ export const AuthProvider = ({ children }) => {
     logout,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authInfo}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
